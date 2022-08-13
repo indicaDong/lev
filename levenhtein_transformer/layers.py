@@ -196,8 +196,8 @@ class LevenshteinDecoder(Decoder):
 
     def forward_word_del(self, encoder_out: Tensor, encoder_out_mask: Tensor, x: Tensor, x_mask: Tensor):
         features = self.extract_features(x, encoder_out, encoder_out_mask, x_mask)
-        print("x shape:",x.shape())
-        print("feature shape:",features.shape())
+        print("x shape:",x.size())
+        print("feature shape:",features.size())
         return F.linear(features, self.embed_word_del.weight)
 
 

@@ -27,8 +27,8 @@ wandb.config.update(config)
 
 def main():
     
-    #devices = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-    devices = list(range(torch.cuda.device_count()))
+    devices = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #devices = list(range(torch.cuda.device_count()))
     print('Selected devices: ', devices)
 
     spacy_en = spacy.load('en_core_web_sm')
@@ -121,7 +121,7 @@ def main():
     model.src_embed[0].lookup_table.weight = model.tgt_embed[0].lookup_table.weight
     model.generator.lookup_table.weight = model.tgt_embed[0].lookup_table.weight
     model.decoder.out_layer.lookup_table.weight = model.tgt_embed[0].lookup_table.weight
-    model.cuda()
+    #model.cuda()
 
     model_size = model.src_embed[0].d_model
     print('Model created with size of', model_size)

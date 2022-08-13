@@ -21,8 +21,11 @@ def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
     sentence = [" ".join(src_sentences)]
     explainer = shap.Explainer(classifier)
     shap_values = explainer(sentence)
-    score = classifier(sentence)[1]["score"]
+    score = classifier(sentence)
     s_values = torch.tensor(shap_values.values)
+    print(sentence)
+    print(score)
+    print(s_values.size())
     return s_values ,score
 
 
