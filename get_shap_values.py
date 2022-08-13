@@ -25,7 +25,6 @@ def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
     s_values = torch.tensor(shap_values.values)
     print(sentence)
     print(score)
-    print(s_values.size())
     return s_values ,score
 
 
