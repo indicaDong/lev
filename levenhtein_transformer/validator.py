@@ -56,13 +56,14 @@ def validate(model: LevenshteinEncodeDecoder, iterator, SRC, TGT, EOS_WORD, eos,
             prev_out = out
 
             ##这里加入shap values 然后返回值给decode！
+            print(out.size())
             shap_values, score = get_shap_values(out ,SRC)
-            sentiment_scores.append(score)
+            #sentiment_scores.append(score)
 
             
             
         ##plot sentiment scores
-        plot_sentiment(sentiment_scores)
+        #plot_sentiment(sentiment_scores)
 
         out_sentences = [vector_to_sentence(out[i, :], TGT, EOS_WORD) for i in range(out.size(0))]
 

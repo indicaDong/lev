@@ -45,6 +45,7 @@ class LevenshteinEncodeDecoder(EncoderDecoder):
 
         word_pred_out = self.decoder.forward_word_ins(encoder_out, src_mask, self.tgt_embed(word_pred_input),
                                                       word_pred_tgt_subsequent_masks)
+        
         # make online prediction
         word_predictions = F.log_softmax(word_pred_out, dim=-1).max(2)[1]
         word_predictions.masked_scatter_(~word_pred_tgt_masks, tgt[~word_pred_tgt_masks])
@@ -95,7 +96,7 @@ class LevenshteinEncodeDecoder(EncoderDecoder):
                 _skip(x_mask, can_del_word))
 
             word_del_score = F.log_softmax(word_del_out, 2)
-            ##add shap_balues
+            
             word_del_pred = word_del_score.max(-1)[1].bool()
 
             _tokens = _apply_del_words(
@@ -196,6 +197,8 @@ class LevenshteinDecoder(Decoder):
 
     def forward_word_del(self, encoder_out: Tensor, encoder_out_mask: Tensor, x: Tensor, x_mask: Tensor):
         features = self.extract_features(x, encoder_out, encoder_out_mask, x_mask)
+        print("x shape:",x.size())
+        print("feature shape:",features.size())
         return F.linear(features, self.embed_word_del.weight)
 
 
@@ -211,6 +214,7 @@ class LevenshteinDecoder(Decoder):
             print("x shape:",x.size())
             print("feature shape:",features.size())
             print("s_values shape:",shap_values.size())
+
             return  F.linear(features, self.embed_word_del.weight)
 
 def Embedding(num_embeddings, embedding_dim, padding_idx):

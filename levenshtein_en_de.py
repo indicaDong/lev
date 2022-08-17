@@ -11,10 +11,11 @@ from levenhtein_transformer.model import LevenshteinTransformerModel
 from levenhtein_transformer.data import rebatch_and_noise, batch_size_fn, MyIterator
 from levenhtein_transformer.validator import validate
 from utils import save_model
-
+from get_shap_values import *
 from levenhtein_transformer.config import config
 ###TODO:1,改iteration（√） 2.加tokenizer（√） 3.加shap values
 import wandb
+from transformers import AutoTokenizer
 
 BOS_WORD = '<s>'
 EOS_WORD = '</s>'
@@ -25,19 +26,30 @@ wandb.init(project="levenshtein_transformer")
 wandb.config.update(config)
 
 
+
+
+
 def main():
     
     devices = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     #devices = list(range(torch.cuda.device_count()))
     print('Selected devices: ', devices)
 
-    spacy_en = spacy.load('en_core_web_sm')
-    def tokenizer(text):
-        return [tok.text for tok in spacy_en.tokenizer(text)]
+    
+    # spacy_en = spacy.load('en_core_web_sm')
+    # def tokenizer(text):
+    #     return [tok.text for tok in spacy_en.tokenizer(text)]
+    checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
+    tokenizer = AutoTokenizer.from_pretrained(checkpoint, model_max_length = 1024)
+    # def tokenizer(text):s
+        
+    #     tokens = tokenizer.tokenize(text)
+    #     return tokens
 
-    SRC = data.Field(tokenize=tokenizer, pad_token=BLANK_WORD, unk_token=UNK)
-    TGT = data.Field(tokenize=tokenizer, init_token=BOS_WORD, unk_token=UNK,
+    SRC = data.Field(tokenize=tokenizer.tokenize, pad_token=BLANK_WORD, unk_token=UNK)
+    TGT = data.Field(tokenize=tokenizer.tokenize, init_token=BOS_WORD, unk_token=UNK,
                      eos_token=EOS_WORD, pad_token=BLANK_WORD)
+
 
 
     """ 
@@ -121,7 +133,7 @@ def main():
     model.src_embed[0].lookup_table.weight = model.tgt_embed[0].lookup_table.weight
     model.generator.lookup_table.weight = model.tgt_embed[0].lookup_table.weight
     model.decoder.out_layer.lookup_table.weight = model.tgt_embed[0].lookup_table.weight
-    #model.cuda()
+    # model.cuda()
 
     model_size = model.src_embed[0].d_model
     print('Model created with size of', model_size)
