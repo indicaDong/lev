@@ -165,24 +165,24 @@ def main():
     current_steps = 0
     epoch = 0
     while True:
-        # training model
-        print('Epoch ', epoch)
-        wandb.log({'Epoch': epoch}, commit=False)
-        model_par.train()
+        # # training model
+        # print('Epoch ', epoch)
+        # wandb.log({'Epoch': epoch}, commit=False)
+        # model_par.train()
 
-        loss, steps = run_epoch((rebatch_and_noise(b, pad=pad_idx, bos=bos_idx, eos=eos_idx) for b in train_iter),
-                                model=model_par,
-                                opt=model_opt,
-                                steps_so_far=current_steps,
-                                batch_multiplier=config['batch_multiplier'],
-                                logging=True,
-                                train=True)
+        # loss, steps = run_epoch((rebatch_and_noise(b, pad=pad_idx, bos=bos_idx, eos=eos_idx) for b in train_iter),
+        #                         model=model_par,
+        #                         opt=model_opt,
+        #                         steps_so_far=current_steps,
+        #                         batch_multiplier=config['batch_multiplier'],
+        #                         logging=True,
+        #                         train=True)
 
-        current_steps += steps
+        # current_steps += steps
 
-        if epoch >= 2:
-            save_model(model=model, optimizer=model_opt.optimizer, loss=loss, src_field=SRC, tgt_field=TGT,
-                       updates=current_steps, epoch=epoch, prefix=f'lev_t_epoch_{epoch}___')
+        # if epoch >= 2:
+        #     save_model(model=model, optimizer=model_opt.optimizer, loss=loss, src_field=SRC, tgt_field=TGT,
+        #                updates=current_steps, epoch=epoch, prefix=f'lev_t_epoch_{epoch}___')
 
         # calculating validation bleu score
         model_par.eval()

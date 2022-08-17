@@ -19,6 +19,7 @@ classifier  = transformers.pipeline("sentiment-analysis", model=model, tokenizer
 def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
     src_sentences = [vector_to_sentence(out[i, :], SRC, EOS_WORD, start_from=0) for i in range(out.size(0))]
     sentence = [" ".join(src_sentences)]
+    print(len(tokenizer(sentence)["input_ids"]))
     explainer = shap.Explainer(classifier)
     print(sentence)
     shap_values = explainer(sentence)
