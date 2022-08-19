@@ -54,6 +54,7 @@ def vector_to_sentence(vector: torch.Tensor, field, eos_word: str, start_from=1,
         word = field.vocab.itos[vector[l]]
         if word == eos_word:
             break
+        
         sentence.append(word)
 
     sentence = ' '.join(bpe_to_words(sentence))

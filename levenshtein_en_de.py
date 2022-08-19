@@ -22,6 +22,7 @@ EOS_WORD = '</s>'
 BLANK_WORD = '<blank>'
 UNK = '<unk>'
 
+
 wandb.init(project="levenshtein_transformer")
 wandb.config.update(config)
 
@@ -41,6 +42,8 @@ def main():
     #     return [tok.text for tok in spacy_en.tokenizer(text)]
     checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
     tokenizer = AutoTokenizer.from_pretrained(checkpoint, model_max_length = 1024)
+    tokenizer.add_special_tokens(["</s>", '<unk>', '<s>', '<blank>'])
+
     # def tokenizer(text):s
         
     #     tokens = tokenizer.tokenize(text)
