@@ -37,20 +37,20 @@ def main():
     print('Selected devices: ', devices)
 
     
-    # spacy_en = spacy.load('en_core_web_sm')
-    # def tokenizer(text):
-    #     return [tok.text for tok in spacy_en.tokenizer(text)]
-    checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
-    tokenizer = AutoTokenizer.from_pretrained(checkpoint, model_max_length = 1024)
-    tokenizer.add_special_tokens(["</s>", '<unk>', '<s>', '<blank>'])
+    spacy_en = spacy.load('en_core_web_sm')
+    def tokenizer(text):
+         return [tok.text for tok in spacy_en.tokenizer(text)]
+    # checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
+    # tokenizer = AutoTokenizer.from_pretrained(checkpoint, model_max_length = 1024)
+    # tokenizer.add_special_tokens(["</s>", '<unk>', '<s>', '<blank>'])
 
     # def tokenizer(text):s
         
     #     tokens = tokenizer.tokenize(text)
     #     return tokens
 
-    SRC = data.Field(tokenize=tokenizer.tokenize, pad_token=BLANK_WORD, unk_token=UNK)
-    TGT = data.Field(tokenize=tokenizer.tokenize, init_token=BOS_WORD, unk_token=UNK,
+    SRC = data.Field(tokenize=tokenizer, pad_token=BLANK_WORD, unk_token=UNK)
+    TGT = data.Field(tokenize=tokenizer, init_token=BOS_WORD, unk_token=UNK,
                      eos_token=EOS_WORD, pad_token=BLANK_WORD)
 
 

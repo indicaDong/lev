@@ -17,10 +17,26 @@ textcat_spacy = spacy.load("en_core_web_sm")
 
 
 def tok_adapter(text, return_offsets_mapping=False):
-    doc = textcat_spacy.tokenizer(text)
-    out = {"input_ids": [tok.norm for tok in doc]}
+    m = []
+    for i in text:
+      m.extend(i.split(' '))
+    text = m
+    input_ids = []
+    for i in text:
+        doc = textcat_spacy.tokenizer(i)
+        input_ids.extend([doc[0].norm])
+        #out = {"input_ids": [tok.norm for tok in doc]}
+    out = {"input_ids": input_ids}
     if return_offsets_mapping:
-        out["offset_mapping"] = [(tok.idx, tok.idx + len(tok)) for tok in doc]
+        # out["offset_mapping"] = [(tok.idx, tok.idx + len(tok)) for tok in doc]
+        n = []
+        for i in text:          
+
+          doc = textcat_spacy.tokenizer(i)
+          n.extend([(doc[0].idx, doc[0].idx + len(doc[0]) )])
+          out["offset_mapping"] = n
+          #out = {"input_ids": [tok.norm for tok in doc]}
+         
     return out
 
 # def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
@@ -68,13 +84,14 @@ def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
     #src_sentences = [vector_to_sentence(out[i, :], SRC, EOS_WORD, start_from=0) for i in range(out.size(0))]
     tokens = []
     for i in range(out.size(0)):
-      for j in i:
-        tokens.append(vector_to_sentence(j, SRC, EOS_WORD, start_from=0 ))
+      for j in out[i,:]:
+        word = SRC.vocab.itos[j]
+        tokens.append(word)
     print("tokens",len(tokens))
 
 
     sentence = [" ".join(tokens)]
-    #print(len(tokenizer(sentence)["input_ids"][0]))
+    print(len(tok_adapter(sentence)["input_ids"]))
     explainer = shap.Explainer(classifier,shap.maskers.Text(tok_adapter))
     
     print(sentence)
@@ -82,7 +99,7 @@ def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
     #score = classifier(sentence)
     s_values = torch.tensor(shap_values.values)
     print(s_values.size())
-   
+  #  s_values = s_values
    # print(score)
     return s_values #,score
 
