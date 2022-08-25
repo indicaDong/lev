@@ -5,10 +5,11 @@ import transformers
 import shap
 from utils import vector_to_sentence
 import torch
+from spacy.tokens import Doc
 
 checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
 tokenizer = AutoTokenizer.from_pretrained(checkpoint, model_max_length = 1024)
-classifier  = transformers.pipeline("sentiment-analysis",tokenizer = tokenizer)
+classifier  = transformers.pipeline("sentiment-analysis")
 #tokenizer.add_special_tokens(["</s>", '<unk>', '<s>', '<blank>'])
 
 
@@ -105,7 +106,7 @@ def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
 
 
     sentence = [" ".join(tokens)]
-    print(len(tok_adapter(sentence)["input_ids"]))
+    print(len(tok_adapter(sentence[0])["input_ids"]))
     explainer = shap.Explainer(classifier,shap.maskers.Text(tok_adapter))
     
     print(sentence)
