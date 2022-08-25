@@ -16,27 +16,41 @@ import spacy
 textcat_spacy = spacy.load("en_core_web_sm")
 
 
-def tok_adapter(text, return_offsets_mapping=False):
-    m = []
-    for i in text:
-      m.extend(i.split(' '))
-    text = m
-    input_ids = []
-    for i in text:
-        doc = textcat_spacy.tokenizer(i)
-        input_ids.extend([doc[0].norm])
-        #out = {"input_ids": [tok.norm for tok in doc]}
-    out = {"input_ids": input_ids}
-    if return_offsets_mapping:
-        # out["offset_mapping"] = [(tok.idx, tok.idx + len(tok)) for tok in doc]
-        n = []
-        for i in text:          
+def tok_adapter(texts, return_offsets_mapping=False):
+    text = texts.split(" ")
+    spaces = [False for i in range(len(text))]
+    #print(text)
 
-          doc = textcat_spacy.tokenizer(i)
-          n.extend([(doc[0].idx, doc[0].idx + len(doc[0]) )])
-          out["offset_mapping"] = n
-          #out = {"input_ids": [tok.norm for tok in doc]}
-         
+    if texts == "":
+        doc = textcat_spacy.tokenizer(texts)
+        out = {"input_ids": [tok.norm for tok in doc]}
+        
+    else:
+        text = texts.split(" ")
+        spaces = [False for i in range(len(text))]
+        
+        for i in range(len(text)):
+            if text[i] == "":
+                text[i] = " "
+        #print(text)
+        doc = Doc(textcat_spacy.vocab, words=text, spaces=spaces)
+        #print(doc[-1])
+        out = {"input_ids": [tok.norm for tok in doc]}
+        #print(out)
+    if return_offsets_mapping:
+        mapping = []
+        a = 0
+        for tok in doc:
+            
+            b = a + len(tok)
+            mapping.append((a,b))
+            a = b + 1
+#             if (tok.idx != 0):
+#                 mapping.append((tok.idx, tok.idx + len(tok)))
+#             else:
+#                 mapping.append((tok.idx, tok.idx + len(tok)))
+                
+        out["offset_mapping"] = mapping
     return out
 
 # def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
