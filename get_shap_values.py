@@ -6,15 +6,21 @@ import shap
 from utils import vector_to_sentence
 import torch
 from spacy.tokens import Doc
+import spacy
 
 checkpoint = "distilbert-base-uncased-finetuned-sst-2-english"
-tokenizer = AutoTokenizer.from_pretrained(checkpoint, model_max_length = 1024)
-classifier  = transformers.pipeline("sentiment-analysis")
+tokenizer = AutoTokenizer.from_pretrained(checkpoint, model_max_length = 2048)
+model = TFAutoModelForSequenceClassification.from_pretrained(checkpoint)
+classifier  = transformers.pipeline("sentiment-analysis", model = model, tokenizer = tokenizer)
+
+
+
+textcat_spacy = spacy.load("en_core_web_sm")
+
 #tokenizer.add_special_tokens(["</s>", '<unk>', '<s>', '<blank>'])
 
 
-import spacy
-textcat_spacy = spacy.load("en_core_web_sm")
+
 
 
 def tok_adapter(texts, return_offsets_mapping=False):
@@ -54,44 +60,6 @@ def tok_adapter(texts, return_offsets_mapping=False):
         out["offset_mapping"] = mapping
     return out
 
-# def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
-#     src_sentences = [vector_to_sentence(out[i, :], SRC, EOS_WORD, start_from=0) for i in range(out.size(0))]
-#     sentence = [" ".join(src_sentences)]
-#     print(len(tokenizer(sentence)["input_ids"][]))
-#     explainer = shap.Explainer(classifier)
-#     print(sentence)
-#     shap_values = explainer(sentence)
-#     #score = classifier(sentence)
-#     s_values = torch.tensor(shap_values.values)
-#     print(s_values.size())
-   
-#    # print(score)
-#     return s_values #,score
-
-
-
-# def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
-#     #src_sentences = [vector_to_sentence(out[i, :], SRC, EOS_WORD, start_from=0) for i in range(out.size(0))]
-#     sentence = []
-#     for i in range(out.size(0)):
-#       a = vector_to_sentence(out[i, :], SRC, EOS_WORD, start_from=0)
-#       sentence.append(a)
-#       print(a)
-#       print("tokenizer(a)[",len(tokenizer(a)["input_ids"]))
-#       print(tokenizer.convert_ids_to_tokens(tokenizer(a)["input_ids"]))
-#     sentence = [" ".join(sentence)]
-#     print(sentence)
-#     print("tokenizer(sentence)[",len(tokenizer(sentence)["input_ids"][0]))
-#     print(tokenizer.convert_ids_to_tokens(tokenizer(sentence)["input_ids"][0]))
-#     explainer = shap.Explainer(classifier)
-    
-#     shap_values = explainer(sentence)
-#     #score = classifier(sentence)
-#     s_values = torch.tensor(shap_values.values)
-#     print(s_values.size())
-   
-#    # print(score)
-#     return s_values #,score
 
 
 
@@ -112,7 +80,8 @@ def get_shap_values(out ,SRC ,EOS_WORD ='</s>'):
     print(sentence)
     shap_values = explainer(sentence)
     #score = classifier(sentence)
-    s_values = torch.tensor(shap_values.values)
+    s_values = torch.tensor(shap_values.values.T[0])
+    s_values = s_values.reshape_as(out)
     print(s_values.size())
   #  s_values = s_values
    # print(score)
