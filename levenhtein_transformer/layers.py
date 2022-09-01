@@ -197,24 +197,22 @@ class LevenshteinDecoder(Decoder):
 
     def forward_word_del(self, encoder_out: Tensor, encoder_out_mask: Tensor, x: Tensor, x_mask: Tensor):
         features = self.extract_features(x, encoder_out, encoder_out_mask, x_mask)
-        print("x shape:",x.size())
-        print("feature shape:",features.size())
+       
         return F.linear(features, self.embed_word_del.weight)
 
 
     def forward_word_del2(self, encoder_out: Tensor, encoder_out_mask: Tensor, x: Tensor, x_mask: Tensor, shap_values: Tensor):        
         if shap_values is None:
             features = self.extract_features(x, encoder_out, encoder_out_mask, x_mask)
-            print("x shape:",x.size())
-            print("feature shape:",features.size())
+         
             return F.linear(features, self.embed_word_del.weight)
         else:
             features = self.extract_features(x, encoder_out, encoder_out_mask, x_mask)
             ##
-            print("x shape:",x.size())
-            print("feature shape:",features.size())
-            print("s_values shape:",shap_values.size())
-
+            # print("x shape:",x.size())
+            # print("feature shape:",features.size())
+            # print("s_values shape:",shap_values.size())
+            features += shap_values
             return  F.linear(features, self.embed_word_del.weight)
 
 def Embedding(num_embeddings, embedding_dim, padding_idx):
