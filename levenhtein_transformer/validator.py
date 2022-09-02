@@ -29,7 +29,8 @@ def validate(model: LevenshteinEncodeDecoder, iterator, SRC, TGT, EOS_WORD, eos,
 
         src_sentences = [vector_to_sentence(src[i, :], SRC, EOS_WORD, start_from=0) for i in range(src.size(0))]
         tgt_sentences = [vector_to_sentence(tgt[i, :], TGT, EOS_WORD) for i in range(tgt.size(0))]
-
+        print("src",src_sentences)
+        print("tgt",tgt_sentences)
         decode_iter = 0
         prev_out = initialize_output_tokens(batch.trg, bos=bos, eos=eos)
         encoder_out = model.encode(batch.src, batch.src_mask)
@@ -37,6 +38,7 @@ def validate(model: LevenshteinEncodeDecoder, iterator, SRC, TGT, EOS_WORD, eos,
         shap_values = None
         mask = torch.ones(batch.src.size(0), dtype=torch.bool)
         sentiment_scores = []
+        
         while decode_iter < max_decode_iter:
             _out = model.decode(encoder_out[mask], prev_out[mask], batch.src_mask[mask],
                                 max_ins_ratio=config['decoder_length_ratio'] if decode_iter == 0
@@ -66,6 +68,7 @@ def validate(model: LevenshteinEncodeDecoder, iterator, SRC, TGT, EOS_WORD, eos,
         #plot_sentiment(sentiment_scores)
 
         out_sentences = [vector_to_sentence(out[i, :], TGT, EOS_WORD) for i in range(out.size(0))]
+        print("out_sentences",out_sentences)
 
         hypotheses_tokenized += [out_sentence.split(' ') for out_sentence in out_sentences]
         references_tokenized += [[tgt_sentence.split(' ')] for tgt_sentence in tgt_sentences]

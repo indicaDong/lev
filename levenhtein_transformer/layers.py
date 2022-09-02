@@ -13,7 +13,7 @@ from levenhtein_transformer.utils import _apply_del_words, _apply_ins_masks, _ap
     _get_del_targets, _get_ins_targets, fill_tensors as _fill, skip_tensors as _skip, inject_noise
 from levenhtein_transformer.data import BatchWithNoise
 
-
+beta = 0
 class LevenshteinEncodeDecoder(EncoderDecoder):
     def __init__(self, encoder, decoder, src_embed, tgt_embed, generator, pad, bos, eos, unk, criterion):
         super(LevenshteinEncodeDecoder, self).__init__(encoder, decoder, src_embed, tgt_embed, generator)
@@ -212,7 +212,7 @@ class LevenshteinDecoder(Decoder):
             # print("x shape:",x.size())
             # print("feature shape:",features.size())
             # print("s_values shape:",shap_values.size())
-            features += shap_values
+            features += beta * shap_values
             return  F.linear(features, self.embed_word_del.weight)
 
 def Embedding(num_embeddings, embedding_dim, padding_idx):
